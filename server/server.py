@@ -34,7 +34,6 @@ class Server:
             clientThread.start()
             print(f"Accepted connection from {client_address}")
             # send random eof token
-            connection.sendall(self.generate_random_eof_token().encode())
 
             # try:
             #     # Handle the client requests using ClientThread
@@ -150,9 +149,8 @@ class Server:
         """
         #raise NotImplementedError("Your implementation here.")
         response = self.receive_message_ending_with_token(service_socket,1024,eof_token)
-        file = open(f'{file_name}', 'wb')
-        file.write(response)
-        file.close()
+        with open(file_name, 'wb') as file:
+            file.write(response)
 
     def handle_dl(
         self, current_working_directory, file_name, service_socket, eof_token
@@ -166,8 +164,9 @@ class Server:
         :param eof_token: a token to indicate the end of the message.
         """
         #raise NotImplementedError("Your implementation here.")
-        file = open(file_name, 'rb')
-        filecontents = file.read() + eof_token.encode()
+        with open(file_name, 'rb') as file:
+            filecontents = file.read()
+        filecontents = filecontents + eof_token.encode()
         service_socket.sendall(filecontents)
 
     def handle_info(
@@ -215,7 +214,7 @@ class ClientThread(Thread):
     def run(self):
         print ("Connection from : ", self.address)
         #raise NotImplementedError("Your implementation here.")
-
+        eofToken = self.service_socket.sendall(self.server_obj.generate_random_eof_token().encode())
         # establish working directory
         currDir = self.server_obj.get_working_directory_info(os.getcwd())
         # send the current dir info

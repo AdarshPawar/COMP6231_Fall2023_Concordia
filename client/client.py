@@ -1,5 +1,5 @@
 import socket
-
+import time
 
 class Client:
     def __init__(self, host, port):
@@ -112,8 +112,9 @@ class Client:
         conn, eof_token = self.initialize(self.host,self.port)
         message = command_and_arg.encode()
         conn.sendall(message)
-        file = open(command_and_arg.split(' ')[1], "rb")
-        filecontents = file.read() + eof_token.encode()
+        with open(command_and_arg.split(' ')[1], "rb") as file:
+            filecontents = file.read()
+        filecontents = filecontents + eof_token.encode()
         conn.sendall(filecontents)
         response = self.receive_message_ending_with_token(conn,1024,eof_token).decode()
         print(response)
@@ -135,9 +136,8 @@ class Client:
         message = command_and_arg.encode()
         conn.sendall(message)
         filecontents = self.receive_message_ending_with_token(conn, 1024, eof_token)
-        file = open(f'{filename}', 'wb')
-        file.write(filecontents)
-        file.close()
+        with open(filename, "wb") as file:
+            file.write(filecontents)
 
     def issue_info(self,command_and_arg, client_socket, eof_token):
         """

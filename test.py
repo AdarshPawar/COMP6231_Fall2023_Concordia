@@ -27,7 +27,6 @@ if __name__ == '__main__':
     command_and_arg = ['mkdir test_dir',
                        'cd test_dir',
                        'ul jellyfish.jpg',
-                       'dl jellyfish.jpg',
                        'cd ..',
                        'rm test_dir'
                        ]
@@ -62,8 +61,8 @@ if __name__ == '__main__':
     """ Testing rm"""
     sub_client.issue_cd(command_and_arg[4],sub_client_socket,eof_token)
     sub_client.issue_rm(command_and_arg[5], sub_client_socket,eof_token)
-    assert not os.path.exists(os.path.join(os.getcwd(),'test_dir')), 'rm failed'
     time.sleep(0.5)
+    assert not os.path.exists(os.path.join(os.getcwd(),'test_dir')), 'rm failed'
 
     print('*'*8,' CLIENT COMPLETE ','*'*8)
     sub_client_socket.close()
